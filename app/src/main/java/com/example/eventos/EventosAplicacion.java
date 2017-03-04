@@ -2,6 +2,7 @@ package com.example.eventos;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,5 +32,12 @@ public class EventosAplicacion extends Application {
 
     public static DatabaseReference getItemsReference() {
         return eventosReference;
+    }
+
+    static void mostrarDialogo(final Context context, final String mensaje) {
+        Intent intent = new Intent(context, Dialogo.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("mensaje", mensaje);
+        context.startActivity(intent);
     }
 }

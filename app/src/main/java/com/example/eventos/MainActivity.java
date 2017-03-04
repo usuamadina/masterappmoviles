@@ -15,12 +15,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.eventos.EventosAplicacion.PLAY_SERVICES_RESOLUTION_REQUEST;
+import static com.example.eventos.EventosAplicacion.mostrarDialogo;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.reciclerViewEventos)
     RecyclerView recyclerView;
     private DatabaseReference databaseReference;
     private FirebaseRecyclerAdapter adapter;
+    private static MainActivity current;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,26 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        current = this;
+    }
+
+    public static MainActivity getCurrentContext() {
+        return current;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Bundle extras = getIntent().getExtras();
+        if (getIntent().hasExtra("body")) {
+            mostrarDialogo(this, extras.getString("body"));
+            extras.remove("body");
+        }
     }
 
 }
