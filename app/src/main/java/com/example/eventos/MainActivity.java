@@ -67,9 +67,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Bundle extras = getIntent().getExtras();
-        if (getIntent().hasExtra("body")) {
-            mostrarDialogo(this, extras.getString("body"));
-            extras.remove("body");
+        if (extras != null && extras.keySet().size() > 4) {
+            String evento = "";
+            evento = "Evento: " + extras.getString("evento") + "\n";
+            evento = evento + "Día: " + extras.getString("dia") + "\n";
+            evento = evento + "Ciudad: " + extras.getString("ciudad") + "\n";
+            evento = evento + "Comentario: " + extras.getString("comentario");
+            mostrarDialogo(getApplicationContext(), evento);
+            for (String key : extras.keySet()) {
+                getIntent().removeExtra(key);
+            }
+            extras = null;
         }
     }
 
