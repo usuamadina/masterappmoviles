@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             editor.commit();
             FirebaseMessaging.getInstance().subscribeToTopic("Todos");
         }
-
     }
 
     private boolean comprobarGooglePlayServices() {

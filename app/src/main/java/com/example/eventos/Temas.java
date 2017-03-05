@@ -32,6 +32,7 @@ public class Temas extends AppCompatActivity {
         checkBoxTeatro = (CheckBox) findViewById(R.id.checkBoxTeatro);
         checkBoxCine = (CheckBox) findViewById(R.id.checkBoxCine);
         checkBoxFiestas = (CheckBox) findViewById(R.id.checkBoxFiestas);
+
         checkBoxNoRecibirNotificaciones = (CheckBox) findViewById(R.id.checkBoxNoRecibirNotificaciones);
         Boolean noRecibirNotificaciones = consultarSuscripcionATemaEnPreferencias(getApplicationContext(), "Todos");
         checkBoxNoRecibirNotificaciones.setChecked(noRecibirNotificaciones);
@@ -40,7 +41,6 @@ public class Temas extends AppCompatActivity {
         checkBoxCine.setEnabled(!noRecibirNotificaciones);
         checkBoxFiestas.setEnabled(!noRecibirNotificaciones);
 
-        //Subscripción al tema "Todos"
         checkBoxDeportes.setChecked(consultarSuscripcionATemaEnPreferencias(getApplicationContext(), "Deportes"));
         checkBoxTeatro.setChecked(consultarSuscripcionATemaEnPreferencias(getApplicationContext(), "Teatro"));
         checkBoxCine.setChecked(consultarSuscripcionATemaEnPreferencias(getApplicationContext(), "Cine"));
@@ -101,6 +101,7 @@ public class Temas extends AppCompatActivity {
             }
         }
     }
+
 
     public static void guardarSuscripcionATemaEnPreferencias(Context context, String
             tema, Boolean suscrito) {
