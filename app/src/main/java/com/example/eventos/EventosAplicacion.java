@@ -3,9 +3,20 @@ package com.example.eventos;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.AsyncTask;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static com.example.eventos.EventosAplicacion.ID_PROYECTO;
+import static com.example.eventos.EventosAplicacion.URL_SERVIDOR;
 
 /**
  * Created by usuwi on 02/03/2017.
@@ -16,6 +27,9 @@ public class EventosAplicacion extends Application {
     private String ITEMS_CHILD_NAME = "eventos";
     private static DatabaseReference eventosReference;
     private static Context context;
+    static final String URL_SERVIDOR = "http://cursoandroid.hol.es/notificaciones/";
+    static String ID_PROYECTO = "eventos-c583b";
+    String idRegistro = "";
 
     @Override
     public void onCreate() {
@@ -39,5 +53,71 @@ public class EventosAplicacion extends Application {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("mensaje", mensaje);
         context.startActivity(intent);
+    }
+
+    //Almacenamos el identificador de registro obtenido, en el servidor web propio, mediante la tarea síncrona
+    // registrarDispositivoEnServidorWebTask
+
+
+    public static class registrarDispositivoEnServidorWebTask extends AsyncTask<Void, Void, String> {
+        String response = "error";
+        Context contexto;
+        String idRegistroTarea = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+            try {
+                Uri.Builder constructorParametros = new Uri.Builder().appendQueryParameter("iddevice", idRegistroTarea).appendQueryParameter("idapp", ID_PROYECTO);
+                String parametros = constructorParametros.build().getEncodedQuery();
+                String url = URL_SERVIDOR + "registrar.php";
+                URL direccion = new URL(url);
+                HttpURLConnection conexion = (HttpURLConnection) direccion.openConnection();
+                conexion.setRequestMethod("POST");
+                conexion.setRequestProperty("Accept-Language", "UTF-8");
+                conexion.setDoOutput(true);
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conexion.getOutputStream());
+                outputStreamWriter.write(parametros.toString());
+                outputStreamWriter.flush();
+                int respuesta = conexion.getResponseCode();
+                if (respuesta == 200) {
+                    response = "ok";
+                } else {
+                    response = "error";
+                }
+            } catch (IOException e) {
+                response = "error";
+            }
+            return response;
+        }
+
+        public void onPostExecute(String res) {
+            if (res == "ok") {
+                guardarIdRegistroPreferencias(contexto, idRegistroTarea);
+            }
+        }
+    }
+
+    public static void guardarIdRegistroPreferencias(Context context, String idRegistro) {
+        final SharedPreferences prefs = context.getSharedPreferences("Eventos", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("idRegistro", idRegistro);
+        editor.commit();
+    }
+
+    public static String dameIdRegistroPreferencias(Context context) {
+        final SharedPreferences preferencias = context.getSharedPreferences("Eventos", Context.MODE_PRIVATE);
+        String idRegistro = preferencias.getString("idRegistro", "");
+        return idRegistro;
+    }
+
+    public static void guardarIdRegistro(Context context, String idRegistro) {
+        registrarDispositivoEnServidorWebTask tarea = new registrarDispositivoEnServidorWebTask();
+        tarea.contexto = context;
+        tarea.idRegistroTarea = idRegistro;
+        tarea.execute();
     }
 }
