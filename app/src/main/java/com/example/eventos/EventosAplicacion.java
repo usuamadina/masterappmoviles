@@ -9,6 +9,8 @@ import android.os.AsyncTask;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -30,6 +32,8 @@ public class EventosAplicacion extends Application {
     static final String URL_SERVIDOR = "http://cursoandroid.hol.es/notificaciones/";
     static String ID_PROYECTO = "eventos-c583b";
     String idRegistro = "";
+    private FirebaseStorage storage;
+    private static StorageReference storageRef;
 
     @Override
     public void onCreate() {
@@ -38,6 +42,8 @@ public class EventosAplicacion extends Application {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         database.setPersistenceEnabled(true);
         eventosReference = database.getReference(ITEMS_CHILD_NAME);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReferenceFromUrl("gs://eventos-c583b.appspot.com/");
     }
 
     public static Context getAppContext() {
@@ -163,10 +169,17 @@ public class EventosAplicacion extends Application {
             }
             return response;
         }
+
         public void onPostExecute(String res) {
             if (res == "ok") {
                 guardarIdRegistroPreferencias(contexto, "");
             }
         }
     }
+
+    public static StorageReference getStorageReference() {
+        return storageRef;
+    }
+
+
 }
